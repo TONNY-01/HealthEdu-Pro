@@ -60,17 +60,17 @@ jobs:
           
           # Verify build output
           echo "Build completed. Contents of dist directory:"
-          ls -la dist/
+          ls -la docs/
           
           # Create necessary files for GitHub Pages SPA routing
           echo "Creating SPA routing files..."
-          cp 404.html dist/404.html
-          touch dist/.nojekyll
-          echo '/* /index.html 200' > dist/_redirects
+          # 404.html is already a copy of index.html from our local fix
+          touch docs/.nojekyll
+          echo '/* /index.html 200' > docs/_redirects
           
           # Verify final dist contents
           echo "Final dist directory contents:"
-          ls -la dist/
+          ls -la docs/
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
@@ -82,7 +82,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 'dist/'
+          path: 'docs/'
           
   deploy:
     environment:
