@@ -9,7 +9,7 @@ import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import Booking from "./pages/Booking";
 import AITips from "./pages/AITips";
-import Premium from "./pages/Premium";
+import Premium from "./pages/Premium.paystack";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 

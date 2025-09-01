@@ -19,18 +19,56 @@ const AITips = () => {
     
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('groq-chat', {
-        body: { message: symptom }
+      const apiKey = import.meta.env.VITE_GROQ_API_KEY;
+      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+          model: 'meta-llama/llama-4-scout-17b-16e-instruct',
+          messages: [
+            {
+              role: 'system',
+              content: 'You are a helpful healthcare assistant. Provide clear, concise, and accurate medical information.'
+            },
+            {
+              role: 'user',
+              content: `I'm experiencing: ${symptom}. Can you provide some health insights?`
+            }
+          ],
+          temperature: 0.7,
+          max_tokens: 1000
+        })
       });
 
-      if (error) {
-        console.error('Error calling Groq chat:', error);
-        toast.error('Failed to get AI response. Please try again.');
-        return;
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Error from Groq API:', errorData);
+        throw new Error('Failed to get AI response');
       }
 
-      setResponse(data.response);
-      setConfidence(data.confidence);
+      const data = await response.json();
+      const aiResponse = data.choices[0]?.message?.content || 'No response from AI';
+      
+      // Save the response to Supabase
+      const { error } = await supabase
+        .from('tips')
+        .insert([
+          { 
+            symptom: symptom,
+            response: aiResponse,
+            confidence: 0.85 // You can adjust this based on your needs
+          }
+        ]);
+
+      if (error) {
+        console.error('Error saving to Supabase:', error);
+      }
+
+      setResponse(aiResponse);
+      setConfidence(85); // Set a default confidence level
       setSymptom(""); // Clear input after successful submission
       
       // Refresh recent tips
@@ -39,7 +77,7 @@ const AITips = () => {
       toast.success('AI health insight generated successfully!');
     } catch (error) {
       console.error('Error:', error);
-      toast.error('Something went wrong. Please try again.');
+      toast.error('Failed to get AI response. Please try again later.');
     } finally {
       setLoading(false);
     }

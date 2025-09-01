@@ -13,8 +13,18 @@ import {
   Star,
   Sparkles
 } from "lucide-react";
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+
+declare global {
+  interface Window {
+    PaystackPop: any;
+  }
+}
 
 const Premium = () => {
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const features = [
     {
       icon: Brain,
@@ -63,7 +73,7 @@ const Premium = () => {
     },
     {
       name: "Premium",
-      price: "299",
+      price: 299,
       period: "month",
       features: [
         "Unlimited AI consultations",
@@ -77,7 +87,7 @@ const Premium = () => {
     },
     {
       name: "Premium Annual",
-      price: "2,990",
+      price: 2990,
       period: "year",
       originalPrice: "3,588",
       savings: "Save 17%",
@@ -91,6 +101,42 @@ const Premium = () => {
       bestValue: true
     }
   ];
+
+  const handleUpgradeClick = async (plan: any) => {
+    setLoadingPlan(plan.name);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user || !user.email) {
+        toast.error('You must be logged in to upgrade.');
+        setLoadingPlan(null);
+        return;
+      }
+
+      const { data, error } = await supabase.functions.invoke('intasend-pay', {
+        body: {
+          amount: plan.price,
+          email: user.email,
+          planName: plan.name
+        },
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error('Could not retrieve payment URL.');
+      }
+
+    } catch (error: any) {
+      console.error('Upgrade Error:', error);
+      toast.error(error.message || 'An unexpected error occurred. Please try again.');
+      setLoadingPlan(null);
+    }
+  };
 
   return (
     <div className="min-h-screen pt-24 px-6 pb-20">
@@ -191,6 +237,8 @@ const Premium = () => {
                 className={`w-full ${plan.popular ? 'animate-pulse-neon' : ''}`}
                 variant={plan.limited ? 'outline' : plan.bestValue ? 'accent' : 'default'}
                 size="lg"
+                disabled={loadingPlan === plan.name}
+                onClick={() => !plan.limited && handleUpgradeClick(plan)}
               >
                 {plan.limited ? (
                   <>
@@ -199,8 +247,17 @@ const Premium = () => {
                   </>
                 ) : (
                   <>
-                    <Crown className="w-5 h-5 mr-2" />
-                    Upgrade Now
+                    {loadingPlan === plan.name ? (
+                      <>
+                        <Sparkles className="w-5 h-5 mr-2 animate-spin" />
+                        Redirecting...
+                      </>
+                    ) : (
+                      <>
+                        <Crown className="w-5 h-5 mr-2" />
+                        Upgrade Now
+                      </>
+                    )}
                   </>
                 )}
               </NeonButton>
@@ -238,5 +295,41 @@ const Premium = () => {
     </div>
   );
 };
+
+  const handleUpgradeClick = async (plan: any) => {
+    setLoadingPlan(plan.name);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user || !user.email) {
+        toast.error('You must be logged in to upgrade.');
+        setLoadingPlan(null);
+        return;
+      }
+
+      const { data, error } = await supabase.functions.invoke('intasend-pay', {
+        body: {
+          amount: plan.price,
+          email: user.email,
+          planName: plan.name
+        },
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error('Could not retrieve payment URL.');
+      }
+
+    } catch (error: any) {
+      console.error('Upgrade Error:', error);
+      toast.error(error.message || 'An unexpected error occurred. Please try again.');
+      setLoadingPlan(null);
+    }
+  };
 
 export default Premium;
