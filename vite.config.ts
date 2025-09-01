@@ -5,7 +5,7 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  base: mode === 'production' ? '/neon-care-path/' : '/',
+  base: mode === 'production' ? '/HealthEdu-Pro/' : '/',
   server: {
     host: "::",
     port: 8080,
