@@ -1,0 +1,25 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/.*",
+      "dest": "/index.html"
+    }
+  ],
+  "env": {
+    "VITE_SUPABASE_PROJECT_ID": "johltsnnsoxulzhynwvt",
+    "VITE_SUPABASE_PUBLIC_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpvaGx0c25uc294dWx6aHlud3Z0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2MzcwNDcsImV4cCI6MjA3MjIxMzA0N30.HmWN2fYWChC7KGSZGRXEnTM6j-lpFZANC5WhFiKOohg",
+    "VITE_SUPABASE_URL": "https://johltsnnsoxulzhynwvt.supabase.co",
+    "VITE_GROQ_API_KEY": "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",
+    "VITE_PAYSTACK_PUBLIC_KEY": "pk_test_5ff43473557d4ffbc086205fd2d205001ef7038d"
+  }
+}
