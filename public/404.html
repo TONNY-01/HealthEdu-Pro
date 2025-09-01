@@ -12,10 +12,23 @@
         
         // If this is a direct path access, redirect to the SPA with hash routing
         if (!path.endsWith('index.html')) {
-          const pathWithoutBase = path.startsWith(base) 
-            ? path.substring(base.length) 
-            : path;
-          const newPath = `${base}/index.html${pathWithoutBase}${window.location.search}${hash}`;
+          let pathWithoutBase = path;
+          
+          // Remove the base path if it exists
+          if (path.startsWith(base)) {
+            pathWithoutBase = path.substring(base.length);
+          }
+          
+          // Handle root path
+          if (pathWithoutBase === '/') {
+            pathWithoutBase = '';
+          }
+          
+          // Preserve query parameters and hash
+          const search = window.location.search;
+          const newPath = `${base}/index.html${pathWithoutBase}${search}${hash}`;
+          
+          // Use replace instead of assign to avoid adding to browser history
           window.location.replace(newPath);
         }
       })();

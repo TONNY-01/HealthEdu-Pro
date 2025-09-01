@@ -5,7 +5,7 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  base: '/',
+  base: '/HealthEdu-Pro/',
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => ({
     },
   },
   define: {
-    'import.meta.env.BASE_URL': JSON.stringify('/'),
+    'import.meta.env.BASE_URL': JSON.stringify('/HealthEdu-Pro/'),
   },
   server: {
     host: "::",

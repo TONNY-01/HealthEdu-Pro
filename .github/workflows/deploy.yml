@@ -2,22 +2,21 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [main]
-  workflow_dispatch:
+    branches: [main]  # Trigger on pushes to main branch
+  workflow_dispatch:  # Allow manual triggers
 
-# Sets permissions of the GITHUB_TOKEN
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Environment variables
 env:
   NODE_VERSION: '18'
+  BASE_PATH: '/HealthEdu-Pro'
 
 # Allow one concurrent deployment
 concurrency:
-  group: "pages"
+  group: 'pages'
   cancel-in-progress: true
 
 jobs:
@@ -38,39 +37,32 @@ jobs:
 
       - name: Build
         run: |
-          npm run build
-          # Create a proper 404.html for GitHub Pages
-          echo '<!DOCTYPE html>
-          <html>
-            <head>
-              <meta charset="utf-8">
-              <title>Loading HealthEdu Pro...</title>
-              <meta http-equiv="refresh" content="0; URL=/HealthEdu-Pro/" />
-              <script>
-                // Single-page app support for GitHub Pages
-                const path = window.location.pathname;
-                if (path.includes("404.html")) {
-                  window.location.href = "/HealthEdu-Pro/";
-                }
-              </script>
-            </head>
-            <body>
-              <p>Redirecting to <a href="/HealthEdu-Pro/">HealthEdu Pro</a>...</p>
-            </body>
-          </html>' > dist/404.html
+          # Set the base URL for the build
+          echo "VITE_BASE_URL=${{ env.BASE_PATH }}/" >> $GITHUB_ENV
           
-          # Ensure _redirects file is present
+          # Build the application
+          npm run build
+          
+          # Create necessary files for GitHub Pages SPA routing
+          cp 404.html dist/404.html
+          touch dist/.nojekyll
           echo '/* /index.html 200' > dist/_redirects
+          
+          # List the contents of the dist directory for debugging
+          ls -la dist/
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
           VITE_PAYSTACK_PUBLIC_KEY: ${{ secrets.VITE_PAYSTACK_PUBLIC_KEY }}
-
+      
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+        
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './dist'
-
+          path: 'dist/'
+          
   deploy:
     environment:
       name: github-pages
@@ -81,8 +73,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          target_branch: gh-pages
-          build_dir: dist
-          clean: true
