@@ -2,47 +2,85 @@ import { GlassCard } from "@/components/ui/glass-card";
 import { NeonButton } from "@/components/ui/neon-button";
 import { NeonText } from "@/components/ui/neon-text";
 import { Brain, Send, Sparkles, TrendingUp, Clock, Star } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const AITips = () => {
   const [symptom, setSymptom] = useState("");
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState("");
   const [confidence, setConfidence] = useState(0);
+  const [recentTips, setRecentTips] = useState<any[]>([]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!symptom.trim()) return;
     
     setLoading(true);
-    // Simulate AI response
-    setTimeout(() => {
-      setResponse(`Based on your symptoms "${symptom}", here are some personalized health recommendations: Stay hydrated, get adequate rest, and consider consulting with a healthcare professional if symptoms persist. This is general advice and should not replace professional medical consultation.`);
-      setConfidence(Math.floor(Math.random() * 20) + 80); // 80-99%
+    try {
+      const { data, error } = await supabase.functions.invoke('groq-chat', {
+        body: { message: symptom }
+      });
+
+      if (error) {
+        console.error('Error calling Groq chat:', error);
+        toast.error('Failed to get AI response. Please try again.');
+        return;
+      }
+
+      setResponse(data.response);
+      setConfidence(data.confidence);
+      setSymptom(""); // Clear input after successful submission
+      
+      // Refresh recent tips
+      await loadRecentTips();
+      
+      toast.success('AI health insight generated successfully!');
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error('Something went wrong. Please try again.');
+    } finally {
       setLoading(false);
-    }, 2000);
+    }
   };
 
-  const recentTips = [
-    {
-      input: "Feeling tired and stressed",
-      response: "Consider meditation and regular sleep schedule",
-      confidence: 92,
-      time: "2 hours ago"
-    },
-    {
-      input: "Lower back pain from sitting",
-      response: "Take breaks every hour and do stretching exercises",
-      confidence: 88,
-      time: "1 day ago"
-    },
-    {
-      input: "Seasonal allergies",
-      response: "Monitor pollen levels and consider natural remedies",
-      confidence: 95,
-      time: "3 days ago"
+  const loadRecentTips = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('tips')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(5);
+
+      if (error) {
+        console.error('Error loading recent tips:', error);
+        return;
+      }
+
+      setRecentTips(data || []);
+    } catch (error) {
+      console.error('Error loading recent tips:', error);
     }
-  ];
+  };
+
+  useEffect(() => {
+    loadRecentTips();
+  }, []);
+
+  const formatTimeAgo = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
+    
+    if (diffInHours < 1) return 'Just now';
+    if (diffInHours < 24) return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
+    
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`;
+    
+    return date.toLocaleDateString();
+  };
 
   return (
     <div className="min-h-screen pt-24 px-6 pb-20">
@@ -144,35 +182,42 @@ const AITips = () => {
           </div>
 
           <div className="space-y-4">
-            {recentTips.map((tip, index) => (
-              <div key={index} className="p-6 bg-muted rounded-xl border border-glass-border">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <div className="w-2 h-2 bg-gradient-primary rounded-full"></div>
-                      <span className="text-foreground font-medium text-sm">Your Question:</span>
-                    </div>
-                    <p className="text-muted-foreground italic mb-3">"{tip.input}"</p>
-                    
-                    <div className="flex items-center space-x-2 mb-2">
-                      <Brain className="w-4 h-4 text-secondary" />
-                      <span className="text-foreground font-medium text-sm">AI Response:</span>
-                    </div>
-                    <p className="text-foreground">{tip.response}</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center space-x-4">
-                    <div className="flex items-center space-x-1">
-                      <TrendingUp className="w-4 h-4 text-accent" />
-                      <span className="text-accent font-semibold">{tip.confidence}% Confidence</span>
-                    </div>
-                  </div>
-                  <span className="text-muted-foreground">{tip.time}</span>
-                </div>
+            {recentTips.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <Brain className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                <p>No recent tips yet. Ask AI Daktari your first health question!</p>
               </div>
-            ))}
+            ) : (
+              recentTips.map((tip, index) => (
+                <div key={tip.id} className="p-6 bg-muted rounded-xl border border-glass-border">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <div className="w-2 h-2 bg-gradient-primary rounded-full"></div>
+                        <span className="text-foreground font-medium text-sm">Your Question:</span>
+                      </div>
+                      <p className="text-muted-foreground italic mb-3">"{tip.input_text}"</p>
+                      
+                      <div className="flex items-center space-x-2 mb-2">
+                        <Brain className="w-4 h-4 text-secondary" />
+                        <span className="text-foreground font-medium text-sm">AI Response:</span>
+                      </div>
+                      <p className="text-foreground">{tip.ai_response}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center space-x-4">
+                      <div className="flex items-center space-x-1">
+                        <TrendingUp className="w-4 h-4 text-accent" />
+                        <span className="text-accent font-semibold">{tip.confidence}% Confidence</span>
+                      </div>
+                    </div>
+                    <span className="text-muted-foreground">{formatTimeAgo(tip.created_at)}</span>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </GlassCard>
       </div>
