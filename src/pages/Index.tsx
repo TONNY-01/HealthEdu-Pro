@@ -2,6 +2,7 @@ import { GlassCard } from "@/components/ui/glass-card";
 import { NeonButton } from "@/components/ui/neon-button";
 import { NeonText } from "@/components/ui/neon-text";
 import heroImage from "@/assets/hero-health.jpg";
+import { useNavigate } from "react-router-dom";
 import { 
   Calendar, 
   Brain, 
@@ -14,6 +15,21 @@ import {
 } from "lucide-react";
 
 const Index = () => {
+  const navigate = useNavigate();
+
+  const handleGetStarted = () => {
+    navigate('/auth');
+  };
+
+  const handleBookDemo = () => {
+    navigate('/booking');
+  };
+
+  const handleLearnMore = () => {
+    // Scroll to features section
+    const featuresSection = document.querySelector('#features');
+    featuresSection?.scrollIntoView({ behavior: 'smooth' });
+  };
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Background Effects */}
@@ -44,11 +60,11 @@ const Index = () => {
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <NeonButton size="lg" className="animate-pulse-neon">
+              <NeonButton size="lg" className="animate-pulse-neon" onClick={handleGetStarted}>
                 <Zap className="w-5 h-5 mr-2" />
                 Get Started Free
               </NeonButton>
-              <NeonButton variant="glass" size="lg">
+              <NeonButton variant="glass" size="lg" onClick={handleLearnMore}>
                 <Heart className="w-5 h-5 mr-2" />
                 Learn More
               </NeonButton>
@@ -68,7 +84,7 @@ const Index = () => {
       </section>
 
       {/* Features Section */}
-      <section className="relative py-20 px-6">
+      <section id="features" className="relative py-20 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <NeonText as="h2" variant="glow" size="4xl" className="font-bold mb-4">
@@ -158,11 +174,11 @@ const Index = () => {
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <NeonButton size="lg" className="animate-pulse-neon">
+              <NeonButton size="lg" className="animate-pulse-neon" onClick={handleGetStarted}>
                 <Shield className="w-5 h-5 mr-2" />
                 Sign Up - It's Free
               </NeonButton>
-              <NeonButton variant="outline" size="lg">
+              <NeonButton variant="outline" size="lg" onClick={handleBookDemo}>
                 <Stethoscope className="w-5 h-5 mr-2" />
                 Book Demo
               </NeonButton>

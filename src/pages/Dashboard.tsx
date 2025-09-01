@@ -1,6 +1,9 @@
 import { GlassCard } from "@/components/ui/glass-card";
 import { NeonButton } from "@/components/ui/neon-button";
 import { NeonText } from "@/components/ui/neon-text";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { useEffect } from "react";
 import { 
   Calendar, 
   Brain, 
@@ -13,6 +16,34 @@ import {
 } from "lucide-react";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+  const { user, loading } = useAuth();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate('/auth');
+    }
+  }, [user, loading, navigate]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
+
+  const handleBookAppointment = () => {
+    navigate('/booking');
+  };
+
+  const handleGetTips = () => {
+    navigate('/ai-tips');
+  };
   return (
     <div className="min-h-screen pt-24 px-6 pb-20">
       {/* Background Effects */}
@@ -23,7 +54,7 @@ const Dashboard = () => {
         {/* Welcome Section */}
         <div className="mb-12">
           <NeonText as="h1" variant="glow" size="3xl" className="font-bold mb-2">
-            Welcome back, Sarah!
+            Welcome back, {user.email?.split('@')[0]}!
           </NeonText>
           <p className="text-muted-foreground text-lg">
             Ready to continue your health journey today?
@@ -47,7 +78,7 @@ const Dashboard = () => {
                     Schedule a consultation with our expert medical professionals
                   </p>
                 </div>
-                <NeonButton>
+                <NeonButton onClick={handleBookAppointment}>
                   <Calendar className="w-4 h-4 mr-2" />
                   Book Now
                 </NeonButton>
@@ -70,7 +101,7 @@ const Dashboard = () => {
                     Get personalized health insights powered by AI
                   </p>
                 </div>
-                <NeonButton variant="secondary">
+                <NeonButton variant="secondary" onClick={handleGetTips}>
                   <Brain className="w-4 h-4 mr-2" />
                   Get Tips
                 </NeonButton>

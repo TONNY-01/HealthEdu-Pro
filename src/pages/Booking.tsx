@@ -2,12 +2,76 @@ import { GlassCard } from "@/components/ui/glass-card";
 import { NeonButton } from "@/components/ui/neon-button";
 import { NeonText } from "@/components/ui/neon-text";
 import { Calendar, Clock, MapPin, User, Check } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const Booking = () => {
   const [selectedClinic, setSelectedClinic] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/auth');
+    }
+  }, [user, navigate]);
+
+  const handleConfirmBooking = async () => {
+    if (!selectedClinic || !selectedDate || !selectedTime || !user) {
+      toast.error("Please complete all booking details");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const selectedClinicData = clinics.find(c => c.id === selectedClinic);
+      
+      const { error } = await supabase
+        .from('bookings')
+        .insert({
+          user_id: user.id,
+          clinic_name: selectedClinicData?.name || 'Unknown Clinic',
+          date: selectedDate,
+          time_slot: selectedTime,
+          status: 'pending'
+        });
+
+      if (error) {
+        console.error('Booking error:', error);
+        toast.error("Failed to create booking. Please try again.");
+        return;
+      }
+
+      toast.success("Booking confirmed successfully! You'll receive a confirmation email shortly.");
+      
+      // Reset form
+      setSelectedClinic("");
+      setSelectedDate("");
+      setSelectedTime("");
+      
+      // Navigate to dashboard
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('Booking error:', error);
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   const clinics = [
     { id: "1", name: "City Medical Center", location: "Downtown", rating: 4.8 },
@@ -177,9 +241,14 @@ const Booking = () => {
                 </div>
               </div>
 
-              <NeonButton size="lg" className="w-full animate-pulse-neon">
+              <NeonButton 
+                size="lg" 
+                className={`w-full ${loading ? 'animate-pulse-neon' : ''}`}
+                onClick={handleConfirmBooking}
+                disabled={loading}
+              >
                 <User className="w-5 h-5 mr-2" />
-                Confirm Booking
+                {loading ? "Confirming..." : "Confirm Booking"}
               </NeonButton>
             </div>
           )}
