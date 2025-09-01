@@ -8,15 +8,16 @@
       (function() {
         const base = '/HealthEdu-Pro';
         const path = window.location.pathname;
+        const hash = window.location.hash;
         
         // If this is a direct path access, redirect to the SPA with hash routing
-        if (!path.includes('index.html')) {
-          const newPath = `${base}/index.html#${path.replace(base, '')}`;
-          window.history.replaceState({}, '', newPath);
+        if (!path.endsWith('index.html')) {
+          const pathWithoutBase = path.startsWith(base) 
+            ? path.substring(base.length) 
+            : path;
+          const newPath = `${base}/index.html${pathWithoutBase}${window.location.search}${hash}`;
+          window.location.replace(newPath);
         }
-        
-        // Force reload to ensure the SPA loads with the correct route
-        window.location.reload();
       })();
     </script>
     <style>
