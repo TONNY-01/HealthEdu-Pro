@@ -14,7 +14,144 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      bookings: {
+        Row: {
+          clinic_name: string
+          created_at: string
+          date: string
+          id: string
+          status: string | null
+          time_slot: string
+          user_id: string
+        }
+        Insert: {
+          clinic_name: string
+          created_at?: string
+          date: string
+          id?: string
+          status?: string | null
+          time_slot: string
+          user_id: string
+        }
+        Update: {
+          clinic_name?: string
+          created_at?: string
+          date?: string
+          id?: string
+          status?: string | null
+          time_slot?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      lessons: {
+        Row: {
+          content_markdown: string
+          created_at: string
+          id: string
+          is_premium: boolean | null
+          order: number
+          title: string
+        }
+        Insert: {
+          content_markdown: string
+          created_at?: string
+          id?: string
+          is_premium?: boolean | null
+          order: number
+          title: string
+        }
+        Update: {
+          content_markdown?: string
+          created_at?: string
+          id?: string
+          is_premium?: boolean | null
+          order?: number
+          title?: string
+        }
+        Relationships: []
+      }
+      payments: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string | null
+          id: string
+          status: string | null
+          transaction_id: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string | null
+          id?: string
+          status?: string | null
+          transaction_id?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string | null
+          id?: string
+          status?: string | null
+          transaction_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          is_premium: boolean | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id: string
+          is_premium?: boolean | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          is_premium?: boolean | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      tips: {
+        Row: {
+          ai_response: string
+          confidence: number | null
+          created_at: string
+          id: string
+          input_text: string
+          user_id: string
+        }
+        Insert: {
+          ai_response: string
+          confidence?: number | null
+          created_at?: string
+          id?: string
+          input_text: string
+          user_id: string
+        }
+        Update: {
+          ai_response?: string
+          confidence?: number | null
+          created_at?: string
+          id?: string
+          input_text?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
