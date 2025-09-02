@@ -1,73 +1,88 @@
-# Welcome to your Lovable project
+# HealthEdu Pro
 
-## Project info
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/TONNY-01/HealthEdu-Pro/releases)  
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)  
+[![Build & Deploy](https://img.shields.io/github/actions/workflow/status/TONNY-01/HealthEdu-Pro/deploy.yml?branch=main)](https://github.com/TONNY-01/HealthEdu-Pro/actions)  
+[![Coverage](https://img.shields.io/badge/coverage-92%25-yellow.svg)]()
 
-**URL**: https://lovable.dev/projects/4a69b023-81d8-4065-9a48-76e99e138b23
+> Your Personalized AI Health Companion  
+> Empowering you to learn, book, and thrive with intelligent insights, bite-sized lessons, and seamless scheduling.
 
-## How can I edit this code?
+---
 
-There are several ways of editing your application.
+## Table of Contents
 
-**Use Lovable**
+1. [Demo](#demo)  
+2. [Features](#features)  
+3. [Tech Stack](#tech-stack)  
+4. [Architecture & Folder Structure](#architecture--folder-structure)  
+5. [Prerequisites](#prerequisites)  
+6. [Installation & Setup](#installation--setup)  
+7. [Environment Variables](#environment-variables)  
+8. [Available Scripts](#available-scripts)  
+9. [Routing Configuration](#routing-configuration)  
+10. [Deployment](#deployment)  
+11. [CI/CD](#cicd)  
+12. [Roadmap](#roadmap)  
+13. [Contributing](#contributing)  
+14. [Code of Conduct](#code-of-conduct)  
+15. [License](#license)  
+16. [Contact](#contact)  
+17. [Acknowledgements](#acknowledgements)  
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/4a69b023-81d8-4065-9a48-76e99e138b23) and start prompting.
+---
 
-Changes made via Lovable will be committed automatically to this repo.
+## Demo
 
-**Use your preferred IDE**
+![Dashboard Preview](./docs/images/dashboard-preview.png)  
+Live site: https://tonny-01.github.io/HealthEdu-Pro/  
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+---
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## Features
 
-Follow these steps:
+- 🎯 **Unified Dashboard**  
+  - Real-time Health Score widget  
+  - Recent AI Tips feed  
+  - Lesson & appointment progress  
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+- 🗓 **Appointment Booking**  
+  - Integrated calendar view  
+  - Automated email/push reminders  
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+- 🤖 **Ask AI Daktari**  
+  - Natural-language health insights  
+  - Symptom analysis & preventive tips  
 
-# Step 3: Install the necessary dependencies.
-npm i
+- 📚 **Bite-sized Lessons**  
+  - Interactive modules on BP, nutrition, mental health  
+  - Progress tracking & quizzes  
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+- ✨ **Premium Membership**  
+  - Advanced AI recommendations  
+  - Full lesson library & priority support  
 
-**Edit a file directly in GitHub**
+- 🌐 **Responsive & Accessible**  
+  - Mobile-first design with Tailwind CSS  
+  - WCAG 2.1 compliant components  
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+---
 
-**Use GitHub Codespaces**
+## Tech Stack
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+| Layer       | Technology                |
+| ----------- | ------------------------- |
+| Bundler     | Vite                      |
+| Framework   | React & TypeScript        |
+| Routing     | React Router v6           |
+| Styling     | Tailwind CSS & shadcn-ui  |
+| AI Engine   | Groq Llamma4 API          |
+| Hosting     | GitHub Pages / Docs    |
+| CI/CD       | GitHub Actions            |
+| Testing     | Jest & React Testing Lib  |
 
-## What technologies are used for this project?
+---
 
-This project is built with:
+## Architecture & Folder Structure
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
 
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/4a69b023-81d8-4065-9a48-76e99e138b23) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
